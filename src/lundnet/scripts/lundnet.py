@@ -39,6 +39,9 @@ def accuracy(preds, labels):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--demo', action='store_true', default=False)
+    parser.add_argument('--dir', type=str, default='')
+    parser.add_argument('--sig', type=str, default='')
+    parser.add_argument('--bkg', type=str, default='')
     parser.add_argument('--train-sig', type=str, default='')
     parser.add_argument('--train-bkg', type=str, default='')
     parser.add_argument('--val-sig', type=str, default='')
@@ -85,6 +88,14 @@ def main():
         args.val_bkg = 'sample_QCD_500GeV.json.gz'
         args.test_sig = 'sample_WW_500GeV.json.gz'
         args.test_bkg = 'sample_QCD_500GeV.json.gz'
+
+    if args.dir != "":
+        args.train_sig = 'data/' + args.dir + "/" + args.sig
+        args.train_bkg = 'data/' + args.dir + "/" + args.bkg
+        args.val_sig   = 'data/' + args.dir + "/" + args.sig
+        args.val_bkg   = 'data/' + args.dir + "/" + args.bkg
+        args.test_sig  = 'data/' + args.dir + "/" + args.sig
+        args.test_bkg  = 'data/' + args.dir + "/" + args.bkg
 
     # training/testing mode
     if args.train_bkg and args.train_sig:

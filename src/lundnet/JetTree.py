@@ -29,13 +29,14 @@ class LundCoordinates:
         self.lnz = np.float32(math.log(z))
         self.lnDelta = np.float32(math.log(delta))
         self.lnKappa = np.float32(math.log(z * delta))
-        self.psi = np.float32(math.atan((j1.rap() - j2.rap()) / (j1.phi() - j2.phi())))
+        self.psi = np.float32(0.0)
+        if j1.phi() != j2.phi(): self.psi = np.float32(math.atan((j1.rap() - j2.rap()) / (j1.phi() - j2.phi())))
+        else:                    self.psi = np.float32(math.pi/2)
 
     # ----------------------------------------------------------------------
     @staticmethod
     def change_dimension(n, order=['lnz', 'lnDelta', 'psi', 'lnm', 'lnKt']):
         LundCoordinates.components = order[:n]
-        print(LundCoordinates.components)
         LundCoordinates.dimension = len(LundCoordinates.components)
 
     # ----------------------------------------------------------------------

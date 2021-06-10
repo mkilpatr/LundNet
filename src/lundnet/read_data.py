@@ -65,6 +65,7 @@ class Reader(object):
             print("# got to end with EOFError (maybe gzip structure broken?) around event", self.n, file=sys.stderr)
             return None
         except ValueError:
+            print(line)
             print("# got to end with ValueError (empty json entry) around event", self.n, file=sys.stderr)
             return None
 
