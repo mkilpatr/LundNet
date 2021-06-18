@@ -8,6 +8,7 @@ import numpy as np
 import errno
 import os
 import optparse
+from decimal import Decimal
 from datetime import datetime
 
 class Plotter:
@@ -22,6 +23,7 @@ def main():
     parser = optparse.OptionParser("usage: %prog [options]\n")
     parser.add_option('-d', "--directory",   dest='directory',   action='store',      default="",               help="Directory to store outputs")
     parser.add_option('-f', "--files",       dest='files',       action='store',      default="",               help="ROC pkl files, semicolon seperated")
+    parser.add_option('-m', "--models",      dest='models',      action='store',      default="",               help="ROC model files, semicolon seperated")
     parser.add_option('-l', "--labels",      dest='labels',      action='store',      default="",               help="Legend labels for each ROC pkl file, semicolon seperated")
     parser.add_option('-n', "--name",        dest='name',        action='store',      default="DAS",            help="String to add to plot name to identify this figure")
     
@@ -47,19 +49,21 @@ def main():
         p.labels = options.labels.split(";")
     else:
         p.labels = p.files
+    if len(options.models):
+        p.models = options.models.split(";")
 
     makeCutPlots(p)
 
 
 # make one plot per pt cut with multiple models per plot
 def makeCutPlots(plotter):
-    print("MAKING PT CUT PLOTS")
     p = plotter
     style = "solid"
 
     # get files
     name = p.name
     files = p.files
+    models = p.models
     labels = p.labels
     
     PtCutList = []
@@ -69,39 +73,46 @@ def makeCutPlots(plotter):
         f1 = open(file1, "rb")
         PtCutMap = pickle.load(f1) 
         PtCutList.append(PtCutMap)
+
+    PtModel = {}
+    for model1, label in zip(models, labels):
+        m1 = open(model1, "r")
+        child = {}
+        for line in m1:
+            lineSplit = line.split(": ")
+            child.update({lineSplit[0]: lineSplit[1].rstrip()})
+        PtModel.update({label: child})
    
     # plot p_t cuts per file
-    for cut in sorted(PtCutList[0].items()):
-        plotRoc  = plt.figure()
-        plotRocAx  = plotRoc.add_subplot(111)
-        rocs  = []
-        ifile = 0
-        for file1, label in zip(files, labels):
-            PtCutMap = PtCutList[ifile]
-            color = p.colors[ifile]
-            print("File: {0} Label: {1} Color: {2} Cut: {3}".format(file1, label, color, cut[0]))
-            PtCutData = PtCutMap[cut[0]]
-            TPRPtCut  = PtCutMap["signal_eff"]  
-            FPRPtCut  = PtCutMap["background_eff"] 
-            
-            rocs.append(plotRocAx.plot(FPRPtCut,      TPRPtCut, label=label, linestyle=style, color=color, alpha=1.0)[0])
-            ifile += 1
+    plotRoc  = plt.figure()
+    plotRocAx  = plotRoc.add_subplot(111)
+    rocs  = []
+    ifile = 0
+    for file1, label in zip(files, labels):
+        PtCutMap = PtCutList[ifile]
+        color = p.colors[ifile]
+        print("File: {0} Label: {1} Color: {2}".format(file1, label, color))
+        TPRPtCut  = PtCutMap["signal_eff"]  
+        FPRPtCut  = PtCutMap["background_eff"] 
         
-        fileLabel = cut[0]
-        plotLabel = ""
-        
-        # crate plot for each cut
-        first_legend = plotRocAx.legend(handles=rocs, loc="lower right")
-        plotRoc.gca().add_artist(first_legend)
-        
-        plotRocAx.set_xlabel("Background Efficiency")
-        plotRocAx.set_ylabel("Signal Efficiency")
-        plotRocAx.set_title("ROC Plot for Signal vs. Background "+plotLabel)
-        plotRocAx.set_xlim(0.0, 1.0)
-        plotRocAx.set_ylim(0.0, 1.0)
-        plotRoc.savefig("{0}roc_{1}_{2}.png".format(p.outputDirectory, name, fileLabel))
-        plotRoc.savefig("{0}roc_{1}_{2}.pdf".format(p.outputDirectory, name, fileLabel))
-        plt.close(plotRoc)
+        plotRocAx.text(0.5, 0.5 - 0.05*ifile, label + ": auc = " + str(round(Decimal(PtModel[label]["auc"]), 6)))
+        #rocs.append(plotRocAx.plot(FPRPtCut,      TPRPtCut, label=label, linestyle=style, color=color, alpha=1.0)[0])
+        rocs.append(plotRocAx.plot(1-FPRPtCut,      TPRPtCut, label=label, linestyle=style, color=color, alpha=1.0)[0])
+        ifile += 1
+    
+    fileLabel = "signal_eff"
+    plotLabel = ""
+    
+    # crate plot for each cut
+    first_legend = plotRocAx.legend(handles=rocs, loc="lower right")
+    plotRoc.gca().add_artist(first_legend)
+    
+    plotRocAx.set_xlabel("False Positive Rate")
+    plotRocAx.set_ylabel("Signal Efficiency")
+    plotRocAx.set_xlim(0.0, 1.0)
+    plotRocAx.set_ylim(0.0, 1.0)
+    plotRoc.savefig("{0}roc_{1}_{2}.pdf".format(p.outputDirectory, name, fileLabel))
+    plt.close(plotRoc)
     
 if __name__ == "__main__":
     main()
