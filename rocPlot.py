@@ -44,13 +44,16 @@ def main():
               raise
     
     p.name = options.name
-    p.files  = options.files.split(";")
+    files = options.files[:-1]
+    p.files  = files.split(";")
     if len(options.labels):
-        p.labels = options.labels.split(";")
+        labels = options.labels[:-1]
+        p.labels = labels.split(";")
     else:
         p.labels = p.files
     if len(options.models):
-        p.models = options.models.split(";")
+        models = options.models[:-1]
+        p.models = models.split(";")
 
     makeCutPlots(p)
 
@@ -94,7 +97,8 @@ def makeCutPlots(plotter):
         print("File: {0} Label: {1} Color: {2}".format(file1, label, color))
         TPRPtCut  = PtCutMap["signal_eff"]  
         FPRPtCut  = PtCutMap["background_eff"] 
-        
+
+        plotRocAx.text(0.5, 0.55, name)        
         plotRocAx.text(0.5, 0.5 - 0.05*ifile, label + ": auc = " + str(round(Decimal(PtModel[label]["auc"]), 6)))
         #rocs.append(plotRocAx.plot(FPRPtCut,      TPRPtCut, label=label, linestyle=style, color=color, alpha=1.0)[0])
         rocs.append(plotRocAx.plot(1-FPRPtCut,      TPRPtCut, label=label, linestyle=style, color=color, alpha=1.0)[0])
