@@ -84,6 +84,9 @@ def segmented_knn_graph(x, k, segs):
     n_total_points, _ = F.shape(x)
     offset = np.insert(np.cumsum(segs), 0, 0)
 
+    print("x: ".format(x))
+    print("segs: ".format(segs))
+
     h_list = F.split(x, segs, 0)
     dst = [
         F.argtopk(pairwise_squared_distance(h_g), k, 1, descending=False) +

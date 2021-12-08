@@ -22,6 +22,8 @@ def bkg_rejection_at_threshold(signal_eff, background_eff, sig_eff=0.5):
     """Background rejection at a given signal efficiency."""
     return 1 / (1 - background_eff[np.argmin(np.abs(signal_eff - sig_eff)) + 1])
 
+def optimum_cut(signal_eff, background_eff):
+    return signal_eff/np.sqrt(background_eff)
 
 def ROC_area(signal_eff, background_eff):
     """Area under the ROC curve."""
@@ -54,7 +56,7 @@ def main():
     parser.add_argument('--ln-kt-min', type=float, default=None)
     parser.add_argument('--ln-delta-min', type=float, default=None)
     parser.add_argument('--load', type=str, default='')
-    parser.add_argument('--save', type=str, default='')
+    parser.add_argument('--save', type=str, default='test')
     parser.add_argument('--name', type=str, default='model')
     parser.add_argument('--test-output', type=str, default='')
     parser.add_argument('--num-epochs', type=int, default=30)
@@ -90,12 +92,12 @@ def main():
         args.test_bkg = 'sample_QCD_500GeV.json.gz'
 
     if args.dir != "":
-        args.train_sig = 'data/' + args.dir + "/" + args.sig
-        args.train_bkg = 'data/' + args.dir + "/" + args.bkg
-        args.val_sig   = 'data/' + args.dir + "/" + args.sig
-        args.val_bkg   = 'data/' + args.dir + "/" + args.bkg
-        args.test_sig  = 'data/' + args.dir + "/" + args.sig
-        args.test_bkg  = 'data/' + args.dir + "/" + args.bkg
+        args.train_sig = 'data/' + args.dir + "/" + args.train_sig
+        args.train_bkg = 'data/' + args.dir + "/" + args.train_bkg
+        args.val_sig   = 'data/' + args.dir + "/" + args.val_sig
+        args.val_bkg   = 'data/' + args.dir + "/" + args.val_bkg
+        args.test_sig  = 'data/' + args.dir + "/" + args.test_sig if args.test_sig != "" else args.val_sig
+        args.test_bkg  = 'data/' + args.dir + "/" + args.test_bkg if args.test_bkg != "" else args.val_bkg
 
     # training/testing mode
     if args.train_bkg and args.train_sig:

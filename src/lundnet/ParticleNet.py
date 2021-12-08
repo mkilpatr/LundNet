@@ -57,6 +57,7 @@ class ParticleNet(nn.Module):
         g = batch_graph
         fts = self.bn_fts(features)
         outputs = []
+        print("batch_graph: {0}, features: {1}, fts: {2}, batch_num_nodes: {3}".format(batch_graph, features, fts, batch_graph.batch_num_nodes))
         for idx, (k, conv) in enumerate(zip(self.k_neighbors, self.edge_convs)):
             if idx > 0:
                 g = remove_self_loop(segmented_knn_graph(fts, k + 1, batch_graph.batch_num_nodes))

@@ -1,7 +1,8 @@
 #!/bin/bash
 
-declare -a regionArray=("ehad" "emu" "hadhad" "muhad" "tot")
-declare -a bkgArray=("dyll" "diboson" "wjets" "bkg")
+#declare -a regionArray=("ehad" "emu" "hadhad" "muhad" "tot")
+declare -a regionArray=("emu")
+declare -a bkgArray=("bkg")
 declare -a sigArray=("ggHHto2b2tau" "vbfHto2tau" "ggHto2tau")
 
 dir=$1
