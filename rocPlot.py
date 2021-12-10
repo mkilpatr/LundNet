@@ -114,6 +114,8 @@ def makeCutPlots(plotter):
     ifile = 0
     icolor = 0
 
+
+
     newLabels = []
     for file1, label in zip(files, labels):
         if label not in PtModel: continue
@@ -124,18 +126,19 @@ def makeCutPlots(plotter):
         FPRPtCut  = PtCutMap["background_eff"] 
 
         newLabels = label.split("_")
-        plotLabel = ""
+        legend = ""
 
         if "ValggHto2tau" in file1: 
             style = "-."
         elif "ValvbfHto2tau" in file1: 
             style = "--"
-        elif "ValggHHto2b2tau" in file1: 
+        elif "ValggHHto2b2tau" in file1 or any(x in file1 for x in ["lundnet", "particlenet"]): 
             style = "-"
         
-        plotLabel = sigName[newLabels[2].replace('Val', '')] + " vs. " + sigName[newLabels[3]] + ": auc = " + str(round(Decimal(PtModel[label]["auc"]), 6))
-        rocs.append(plotRocAx.plot(1-FPRPtCut,      TPRPtCut, label=plotLabel, linestyle=style, color=color, alpha=1.0)[0])
-        if "ValggHto2tau" in file1: icolor += 1
+        if len(newLabels) > 1: legend = sigName[newLabels[2].replace('Val', '')] + " vs. " + sigName[newLabels[3]] + ": auc = " + str(round(Decimal(PtModel[label]["auc"]), 6))
+        else: legend = label
+        rocs.append(plotRocAx.plot(1-FPRPtCut,      TPRPtCut, label=legend, linestyle=style, color=color, alpha=1.0)[0])
+        if "ValggHto2tau" in file1 or any(x in file1 for x in ["lundnet", "particlenet"]): icolor += 1
         ifile += 1
     
     fileLabel = "signal_eff"
@@ -154,7 +157,9 @@ def makeCutPlots(plotter):
     first_legend = plotRocAx.legend(handles=rocs.extend([dyllLine, dibosonLine, wjets1Line, qcdLine, totalLine]), loc="lower right", prop={'size': 8})
     plotRoc.gca().add_artist(first_legend)
 
-    plotRocAx.set_title("Gen Higgs Trained on " + sigName[newLabels[0].replace('Train', '')] + " vs. " + sigName[newLabels[1]] + " in " + sigName[newLabels[4]])
+    #['Higgs', 'TrainggHHto2b2tau', 'qcd', 'ValvbfHto2tau', 'qcd', 'hadhad']
+    if len(newLabels) > 1: plotRocAx.set_title("Gen Higgs Trained on " + sigName[newLabels[0].replace('Train', '')] + " vs. " + sigName[newLabels[1]] + " in " + sigName[newLabels[4]])
+    else: plotRocAx.set_title("Gen Higgs Trained on " + sigName[plotLabel[1].replace('Train', '')] + " vs. " + sigName[plotLabel[2]] + "Validated on " + sigName[plotLabel[3].replace('Val', '')] + " vs. " + sigName[plotLabel[4]] + " in " + sigName[plotLabel[5]])
     plotRocAx.set_xlabel("False Positive Rate")
     plotRocAx.set_ylabel("Signal Efficiency")
     plotRocAx.set_xlim(0.0, 1.0)
