@@ -27,6 +27,8 @@ model = my_dictionary()
 model.add(args.baseDir, my_dictionary())
 model_list = []
 model_auc = []
+auc = []
+mlist = []
 
 def readModel(filedir):
     file = open(args.baseDir + "/" + filedir + "/model_INFO.txt", 'r')
@@ -50,13 +52,12 @@ def readModel(filedir):
             model[args.baseDir][filedir].add(s[0], substr_)
 
 def sortmodel():
-    tuples = zip(*sorted(zip(model_auc, model_list)))
-    #sorted(model_list, key=lambda x: (model[args.baseDir][x]["train_bkg"], model[args.baseDir][x]["test_bkg"]))
-    auc, list = [ list(tuple) for tuple in  tuples]
+    tuples = zip(*sorted(zip(model_auc, model_list), reverse=True))
+    auc, mlist = [ list(tuple) for tuple in  tuples]
 
     res_ = my_dictionary()
     res_.add(args.baseDir, my_dictionary())
-    for m in list:
+    for m in mlist:
         res_[args.baseDir].add(m, model[args.baseDir][m])
     return res_
 
