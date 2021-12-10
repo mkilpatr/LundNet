@@ -61,7 +61,7 @@ def main():
 sigName = {
     "Higgs" : "Gen Higgs",
     "Taus" : r"Gen $\tau$",
-    "ggHHto2b2tau" : r"$ggHH\rightarrow b\bar{b}\tau\tau$",
+    "ggHHto2b2tau" : r"$ggHH\rightarrow bb\tau\tau$",
     "ggHto2tau" : r"$ggH\rightarrow\tau\tau$",
     "vbfHto2tau" : r"$vbfH\rightarrow\tau\tau$",
     "diboson" : "Diboson",
@@ -136,7 +136,7 @@ def makeCutPlots(plotter):
             style = "-"
         
         if len(newLabels) > 1: legend = sigName[newLabels[2].replace('Val', '')] + " vs. " + sigName[newLabels[3]] + ": auc = " + str(round(Decimal(PtModel[label]["auc"]), 6))
-        else: legend = label
+        else: legend = label + ": auc = " + str(round(Decimal(PtModel[label]["auc"]), 6))
         rocs.append(plotRocAx.plot(1-FPRPtCut,      TPRPtCut, label=legend, linestyle=style, color=color, alpha=1.0)[0])
         if "ValggHto2tau" in file1 or any(x in file1 for x in ["lundnet", "particlenet"]): icolor += 1
         ifile += 1
@@ -159,7 +159,9 @@ def makeCutPlots(plotter):
 
     #['Higgs', 'TrainggHHto2b2tau', 'qcd', 'ValvbfHto2tau', 'qcd', 'hadhad']
     if len(newLabels) > 1: plotRocAx.set_title("Gen Higgs Trained on " + sigName[newLabels[0].replace('Train', '')] + " vs. " + sigName[newLabels[1]] + " in " + sigName[newLabels[4]])
-    else: plotRocAx.set_title("Gen Higgs Trained on " + sigName[plotLabel[1].replace('Train', '')] + " vs. " + sigName[plotLabel[2]] + "Validated on " + sigName[plotLabel[3].replace('Val', '')] + " vs. " + sigName[plotLabel[4]] + " in " + sigName[plotLabel[5]])
+    else: plotRocAx.set_title("Gen Higgs Trained on " + sigName[plotLabel[1].replace('Train', '')] + " vs. " + sigName[plotLabel[2]] 
+                              + "\n" +
+                              "Validated on " + sigName[plotLabel[3].replace('Val', '')] + " vs. " + sigName[plotLabel[4]] + " in " + sigName[plotLabel[5]])
     plotRocAx.set_xlabel("False Positive Rate")
     plotRocAx.set_ylabel("Signal Efficiency")
     plotRocAx.set_xlim(0.0, 1.0)
