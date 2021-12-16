@@ -132,13 +132,15 @@ def makeCutPlots(plotter):
             style = "-."
         elif "ValvbfHto2tau" in file1: 
             style = "--"
-        elif "ValggHHto2b2tau" in file1 or any(x in file1 for x in ["lundnet", "particlenet"]): 
+        elif "ValggHHto2b2tau" in file1: 
+            style = "-"
+        if any(x in label for x in ["lundnet", "particlenet"]): 
             style = "-"
         
         if len(newLabels) > 1: legend = sigName[newLabels[2].replace('Val', '')] + " vs. " + sigName[newLabels[3]] + ": auc = " + str(round(Decimal(PtModel[label]["auc"]), 6))
         else: legend = label + ": auc = " + str(round(Decimal(PtModel[label]["auc"]), 6))
         rocs.append(plotRocAx.plot(1-FPRPtCut,      TPRPtCut, label=legend, linestyle=style, color=color, alpha=1.0)[0])
-        if "ValggHto2tau" in file1 or any(x in file1 for x in ["lundnet", "particlenet"]): icolor += 1
+        if "ValggHto2tau" in file1 or any(x in label for x in ["lundnet", "particlenet"]): icolor += 1
         ifile += 1
     
     fileLabel = "signal_eff"
