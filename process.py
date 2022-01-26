@@ -17,7 +17,7 @@ args = parser.parse_args()
 
 regionArray=["ehad", "emu", "hadhad", "muhad", "tot"]
 bkgArray=["dyll", "diboson", "wjets", "qcd", "bkg"]
-sigArray=["ggHHto2b2tau"]
+sigArray=["ggHHto2b2tau", "vbfHto2tau", "ggHto2tau"]
 objArray=["Higgs"]
 
 bkgValArray = ["dyll", "diboson", "wjets", "qcd", "bkg"] 
