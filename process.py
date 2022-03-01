@@ -43,7 +43,7 @@ for o in objArray:
                 for bv in bkgValArray:
                     for reg in regionArray:
                         if args.submittype == "interactive" :
-                            script.write("""lundnet --model {model} --dir {dir}/{region} --train-sig gen{obj}_{sigtrain}.json.gz --train-bkg gen{obj}_{bkgtrain}.json.gz --val-sig gen{obj}_{sigval}.json.gz --val-bkg gen{obj}_{bkgval}.json.gz --save {basedir}/{outdir}/di{obj}_Train{sigtrain}_{bkgtrain}_Val{sigval}_{bkgval}_{region}_{epochStr} --device cpu --num-epochs {epochs}\n""".format(
+                            script.write("""lundnet --model {model} --dir {dir}/{region} --train-sig train/gen{obj}_{sigtrain}.json.gz --train-bkg train/gen{obj}_{bkgtrain}.json.gz --val-sig valid/gen{obj}_{sigval}.json.gz --val-bkg valid/gen{obj}_{bkgval}.json.gz --save {basedir}/{outdir}/di{obj}_Train{sigtrain}_{bkgtrain}_Val{sigval}_{bkgval}_{region}_{epochStr} --device cpu --num-epochs {epochs}\n""".format(
                             dir=args.path, model=args.model, region=reg, sigtrain=s, bkgtrain=b, sigval=sv, bkgval=bv, outdir=args.outdir, epochStr=epochStr, epochs=args.epochs, basedir=args.basedir, obj=o
                             ))
                         elif args.submittype == "condor" :
@@ -58,7 +58,7 @@ for o in objArray:
 cd $SLURM_SUBMIT_DIR
 
 /bin/hostname
-srun --gres=gpu:1 lundnet --model {model} --dir {dir}/{region} --train-sig gen{obj}_{sigtrain}.json.gz --train-bkg gen{obj}_{bkgtrain}.json.gz --val-sig gen{obj}_{sigval}.json.gz --val-bkg gen{obj}_{bkgval}.json.gz --save {basedir}/{outdir}/di{obj}_Train{sigtrain}_{bkgtrain}_Val{sigval}_{bkgval}_{region}_{epochStr} --device cpu --num-epochs {epochs}
+srun --gres=gpu:1 lundnet --model {model} --dir {dir}/{region} --train-sig train/gen{obj}_{sigtrain}.json.gz --train-bkg train/gen{obj}_{bkgtrain}.json.gz --val-sig valid/gen{obj}_{sigval}.json.gz --val-bkg valid/gen{obj}_{bkgval}.json.gz --save {basedir}/{outdir}/di{obj}_Train{sigtrain}_{bkgtrain}_Val{sigval}_{bkgval}_{region}_{epochStr} --device cpu --num-epochs {epochs}
 """.format(
                             dir=args.path, model=args.model, region=reg, sigtrain=s, bkgtrain=b, sigval=sv, bkgval=bv, outdir=args.outdir, epochStr=epochStr, epochs=args.epochs, basedir=args.basedir, obj=o
                             ))
